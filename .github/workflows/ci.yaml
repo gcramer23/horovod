@@ -239,6 +239,7 @@ jobs:
         run: pip install docker-compose
 
       - name: Build
+        timeout-minutes: 30
         run: docker-compose -f docker-compose.test.yml build ${{ matrix.image }}
 
       - name: Docker ls
@@ -246,6 +247,7 @@ jobs:
 
       - name: "Gloo Parallel PyTests"
         if: matrix.Gloo_Parallel_PyTests
+        timeout-minutes: 7
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_Parallel_PyTests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Parallel_PyTests:/artifacts" ${{ matrix.image }} bash -c " cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 horovodrun -np 2 -H localhost:2 --gloo /bin/bash /pytest.sh gloo)"
@@ -253,6 +255,7 @@ jobs:
 
       - name: "Gloo Single PyTests"
         if: matrix.Gloo_Single_PyTests
+        timeout-minutes: 22
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_Single_PyTests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Single_PyTests:/artifacts" ${{ matrix.image }} bash -c " cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh gloo)"
@@ -260,6 +263,7 @@ jobs:
 
       - name: "Gloo Cluster PyTests"
         if: matrix.Gloo_Cluster_PyTests
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_Cluster_PyTests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Cluster_PyTests:/artifacts" ${{ matrix.image }} bash -c " /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.static.xml test_static_run.py"
@@ -267,6 +271,7 @@ jobs:
 
       - name: "Gloo TensorFlow 2.0 MNIST"
         if: matrix.Gloo_TensorFlow_2_0_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_TensorFlow_2_0_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_TensorFlow_2_0_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/tensorflow2/tensorflow2_mnist.py
@@ -274,6 +279,7 @@ jobs:
 
       - name: "Gloo TensorFlow 2.0 Keras MNIST"
         if: matrix.Gloo_TensorFlow_2_0_Keras_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_TensorFlow_2_0_Keras_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_TensorFlow_2_0_Keras_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py
@@ -281,6 +287,7 @@ jobs:
 
       - name: "Gloo PyTorch MNIST"
         if: matrix.Gloo_PyTorch_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_PyTorch_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_PyTorch_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets
@@ -288,6 +295,7 @@ jobs:
 
       - name: "Gloo MXNet MNIST"
         if: matrix.Gloo_MXNet_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_MXNet_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_MXNet_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/mxnet/mxnet_mnist.py
@@ -295,6 +303,7 @@ jobs:
 
       - name: "Elastic Tests 1"
         if: matrix.Elastic_Tests_1
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Elastic_Tests_1
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Tests_1:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.xml test_elastic_torch.py test_elastic_tensorflow2.py"
@@ -302,6 +311,7 @@ jobs:
 
       - name: "Elastic Spark TensorFlow Tests 1"
         if: matrix.Elastic_Spark_TensorFlow_Tests_1
+        timeout-minutes: 30
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Elastic_Spark_TensorFlow_Tests_1
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Spark_TensorFlow_Tests_1:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && SPARK_HOME=/spark SPARK_DRIVER_MEM=512m HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.spark.tf.xml test_elastic_spark_tensorflow2.py"
@@ -309,6 +319,7 @@ jobs:
 
       - name: "Elastic Spark Torch Tests"
         if: matrix.Elastic_Spark_Torch_Tests
+        timeout-minutes: 30
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Elastic_Spark_Torch_Tests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Spark_Torch_Tests:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && SPARK_HOME=/spark SPARK_DRIVER_MEM=512m HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.spark.torch.xml test_elastic_spark_torch.py"
@@ -316,6 +327,7 @@ jobs:
 
       - name: "Spark PyTests"
         if: matrix.Spark_PyTests
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Spark_PyTests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_PyTests:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && (ls -1 test_spark*.py | xargs -n 1 /bin/bash /pytest_standalone.sh spark)"
@@ -323,6 +335,7 @@ jobs:
 
       - name: "Spark Torch MNIST"
         if: matrix.Spark_Torch_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Spark_Torch_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Torch_MNIST:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/pytorch/pytorch_spark_mnist.py --num-proc 2 --work-dir /work --data-dir /data --epochs 3"
@@ -330,6 +343,7 @@ jobs:
 
       - name: "Single PyTorch MNIST"
         if: matrix.Single_PyTorch_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_PyTorch_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_PyTorch_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/pytorch/pytorch_mnist.py --epochs 3 --data-dir /data/pytorch_datasets"
@@ -337,6 +351,7 @@ jobs:
 
       - name: "Single MXNet MNIST"
         if: matrix.Single_MXNet_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_MXNet_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/mxnet/mxnet_mnist.py --epochs 3"
@@ -344,6 +359,7 @@ jobs:
 
       - name: "MPI Parallel PyTests"
         if: matrix.MPI_Parallel_PyTests
+        timeout-minutes: 7
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Parallel_PyTests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Parallel_PyTests:/artifacts" ${{ matrix.image }} bash -c "  cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 \$(cat /mpirun_command) /bin/bash /pytest.sh mpi)"
@@ -351,6 +367,7 @@ jobs:
 
       - name: "MPI Single PyTests"
         if: matrix.MPI_Single_PyTests
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Single_PyTests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Single_PyTests:/artifacts" ${{ matrix.image }} bash -c "  cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh mpi)"
@@ -358,6 +375,7 @@ jobs:
 
       - name: "MPI Cluster PyTests"
         if: matrix.MPI_Cluster_PyTests
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Cluster_PyTests
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Cluster_PyTests:/artifacts" ${{ matrix.image }} bash -c "  /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.static.xml test_static_run.py"
@@ -365,6 +383,7 @@ jobs:
 
       - name: "MPI PyTorch MNIST"
         if: matrix.MPI_PyTorch_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST:/artifacts" ${{ matrix.image }} bash -c " \$(cat /mpirun_command) python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets"
@@ -372,6 +391,7 @@ jobs:
 
       - name: "MPI MXNet MNIST"
         if: matrix.MPI_MXNet_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_MXNet_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_MXNet_MNIST:/artifacts" ${{ matrix.image }} bash -c " OMP_NUM_THREADS=1 \$(cat /mpirun_command) python /horovod/examples/mxnet/mxnet_mnist.py"
@@ -379,6 +399,7 @@ jobs:
 
       - name: "MPI TensorFlow 2.0 MNIST"
         if: matrix.MPI_TensorFlow_2_0_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST:/artifacts" ${{ matrix.image }} bash -c " \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_mnist.py"
@@ -386,6 +407,7 @@ jobs:
 
       - name: "MPI TensorFlow 2.0 Keras MNIST"
         if: matrix.MPI_TensorFlow_2_0_Keras_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST:/artifacts" ${{ matrix.image }} bash -c " \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py"
@@ -393,6 +415,7 @@ jobs:
 
       - name: "MPI Parallel PyTests [ONECCL MPI]"
         if: matrix.MPI_Parallel_PyTests_ONECCL_MPI
+        timeout-minutes: 7
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Parallel_PyTests_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Parallel_PyTests_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command &&  cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 \$(cat /mpirun_command) /bin/bash /pytest.sh mpi)"
@@ -400,6 +423,7 @@ jobs:
 
       - name: "MPI Single PyTests [ONECCL MPI]"
         if: matrix.MPI_Single_PyTests_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Single_PyTests_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Single_PyTests_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command &&  cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh mpi)"
@@ -407,6 +431,7 @@ jobs:
 
       - name: "MPI Cluster PyTests [ONECCL MPI]"
         if: matrix.MPI_Cluster_PyTests_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Cluster_PyTests_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Cluster_PyTests_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command &&  /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.static.xml test_static_run.py"
@@ -414,6 +439,7 @@ jobs:
 
       - name: "MPI PyTorch MNIST [ONECCL MPI]"
         if: matrix.MPI_PyTorch_MNIST_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets"
@@ -421,6 +447,7 @@ jobs:
 
       - name: "MPI MXNet MNIST [ONECCL MPI]"
         if: matrix.MPI_MXNet_MNIST_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_MXNet_MNIST_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_MXNet_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && OMP_NUM_THREADS=1 \$(cat /mpirun_command) python /horovod/examples/mxnet/mxnet_mnist.py"
@@ -428,6 +455,7 @@ jobs:
 
       - name: "MPI TensorFlow 2.0 MNIST [ONECCL MPI]"
         if: matrix.MPI_TensorFlow_2_0_MNIST_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_mnist.py"
@@ -435,6 +463,7 @@ jobs:
 
       - name: "MPI TensorFlow 2.0 Keras MNIST [ONECCL MPI]"
         if: matrix.MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py"
@@ -442,6 +471,7 @@ jobs:
 
       - name: "MPI Parallel PyTests [ONECCL OFI]"
         if: matrix.MPI_Parallel_PyTests_ONECCL_OFI
+        timeout-minutes: 7
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Parallel_PyTests_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Parallel_PyTests_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command &&  cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 \$(cat /mpirun_command) /bin/bash /pytest.sh mpi)"
@@ -449,6 +479,7 @@ jobs:
 
       - name: "MPI Single PyTests [ONECCL OFI]"
         if: matrix.MPI_Single_PyTests_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Single_PyTests_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Single_PyTests_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command &&  cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh mpi)"
@@ -456,6 +487,7 @@ jobs:
 
       - name: "MPI Cluster PyTests [ONECCL OFI]"
         if: matrix.MPI_Cluster_PyTests_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_Cluster_PyTests_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Cluster_PyTests_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command &&  /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.static.xml test_static_run.py"
@@ -463,6 +495,7 @@ jobs:
 
       - name: "MPI PyTorch MNIST [ONECCL OFI]"
         if: matrix.MPI_PyTorch_MNIST_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets"
@@ -470,6 +503,7 @@ jobs:
 
       - name: "MPI MXNet MNIST [ONECCL OFI]"
         if: matrix.MPI_MXNet_MNIST_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_MXNet_MNIST_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_MXNet_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && OMP_NUM_THREADS=1 \$(cat /mpirun_command) python /horovod/examples/mxnet/mxnet_mnist.py"
@@ -477,6 +511,7 @@ jobs:
 
       - name: "MPI TensorFlow 2.0 MNIST [ONECCL OFI]"
         if: matrix.MPI_TensorFlow_2_0_MNIST_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_mnist.py"
@@ -484,6 +519,7 @@ jobs:
 
       - name: "MPI TensorFlow 2.0 Keras MNIST [ONECCL OFI]"
         if: matrix.MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py"
@@ -491,6 +527,7 @@ jobs:
 
       - name: "Single PyTorch MNIST [ONECCL MPI]"
         if: matrix.Single_PyTorch_MNIST_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_PyTorch_MNIST_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_PyTorch_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && python /horovod/examples/pytorch/pytorch_mnist.py --epochs 3 --data-dir /data/pytorch_datasets"
@@ -498,6 +535,7 @@ jobs:
 
       - name: "Single MXNet MNIST [ONECCL MPI]"
         if: matrix.Single_MXNet_MNIST_ONECCL_MPI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_MXNet_MNIST_ONECCL_MPI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && python /horovod/examples/mxnet/mxnet_mnist.py --epochs 3"
@@ -505,6 +543,7 @@ jobs:
 
       - name: "Single PyTorch MNIST [ONECCL OFI]"
         if: matrix.Single_PyTorch_MNIST_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_PyTorch_MNIST_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_PyTorch_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && python /horovod/examples/pytorch/pytorch_mnist.py --epochs 3 --data-dir /data/pytorch_datasets"
@@ -512,6 +551,7 @@ jobs:
 
       - name: "Single MXNet MNIST [ONECCL OFI]"
         if: matrix.Single_MXNet_MNIST_ONECCL_OFI
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_MXNet_MNIST_ONECCL_OFI
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && python /horovod/examples/mxnet/mxnet_mnist.py --epochs 3"
@@ -519,6 +559,7 @@ jobs:
 
       - name: "Run PyTests test_interactiverun"
         if: matrix.Run_PyTests_test_interactiverun
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Run_PyTests_test_interactiverun
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Run_PyTests_test_interactiverun:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test && pytest -v --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.integration.xml integration/test_interactiverun.py"
@@ -526,6 +567,7 @@ jobs:
 
       - name: "Gloo TensorFlow MNIST"
         if: matrix.Gloo_TensorFlow_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_TensorFlow_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_TensorFlow_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/tensorflow/tensorflow_mnist.py
@@ -533,6 +575,7 @@ jobs:
 
       - name: "Gloo Keras MNIST"
         if: matrix.Gloo_Keras_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_Keras_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Keras_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/keras/keras_mnist_advanced.py
@@ -540,6 +583,7 @@ jobs:
 
       - name: "Elastic Tests 2"
         if: matrix.Elastic_Tests_2
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Elastic_Tests_2
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Tests_2:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.xml test_elastic_torch.py test_elastic_tensorflow.py test_elastic_tensorflow_keras.py"
@@ -547,6 +591,7 @@ jobs:
 
       - name: "Elastic Spark TensorFlow Tests 2"
         if: matrix.Elastic_Spark_TensorFlow_Tests_2
+        timeout-minutes: 30
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Elastic_Spark_TensorFlow_Tests_2
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Spark_TensorFlow_Tests_2:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && SPARK_HOME=/spark SPARK_DRIVER_MEM=512m HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.spark.tf.xml test_elastic_spark_tensorflow.py"
@@ -554,6 +599,7 @@ jobs:
 
       - name: "Spark Keras Rossmann Run"
         if: matrix.Spark_Keras_Rossmann_Run
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Spark_Keras_Rossmann_Run
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Keras_Rossmann_Run:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/keras/keras_spark_rossmann_run.py --num-proc 2 --data-dir file:///data --epochs 3 --sample-rate 0.01"
@@ -561,6 +607,7 @@ jobs:
 
       - name: "Spark Keras Rossmann Estimator"
         if: matrix.Spark_Keras_Rossmann_Estimator
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Spark_Keras_Rossmann_Estimator
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Keras_Rossmann_Estimator:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/keras/keras_spark_rossmann_estimator.py --num-proc 2 --work-dir /work --data-dir file:///data --epochs 3 --sample-rate 0.01"
@@ -568,6 +615,7 @@ jobs:
 
       - name: "Spark Keras MNIST"
         if: matrix.Spark_Keras_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Spark_Keras_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Keras_MNIST:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/keras/keras_spark_mnist.py --num-proc 2 --work-dir /work --data-dir /data --epochs 3"
@@ -575,6 +623,7 @@ jobs:
 
       - name: "Single Keras MNIST"
         if: matrix.Single_Keras_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_Keras_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_Keras_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/keras/keras_mnist_advanced.py --epochs 3 --batch-size 64"
@@ -582,6 +631,7 @@ jobs:
 
       - name: "Gloo MXNet2 MNIST"
         if: matrix.Gloo_MXNet2_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Gloo_MXNet2_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_MXNet2_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/mxnet/mxnet2_mnist.py
@@ -589,6 +639,7 @@ jobs:
 
       - name: "Single MXNet2 MNIST"
         if: matrix.Single_MXNet2_MNIST
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts/${{ matrix.image }}/Single_MXNet2_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet2_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/mxnet/mxnet2_mnist.py --epochs 3"
