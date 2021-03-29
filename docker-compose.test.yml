@@ -89,14 +89,6 @@ services:
         PYTORCH_PACKAGE: torch==1.5.1+cpu
         TORCHVISION_PACKAGE: torchvision==0.6.1+cpu
         MXNET_PACKAGE: mxnet==1.5.1.post0
-  test-cpu-gloo-py3_8-tf2_4_1-keras_none-torch1_7_1-mxnet1_7_0_p2-pyspark_3_0_1:
-    extends: test-cpu-base
-    build:
-      args:
-        TENSORFLOW_PACKAGE: tensorflow-cpu==2.4.1
-        KERAS_PACKAGE: None
-        PYTORCH_PACKAGE: torch==1.7.1+cpu
-        TORCHVISION_PACKAGE: torchvision==0.8.2+cpu
   test-cpu-gloo-py3_8-tfhead-keras_none-torchhead-mxnethead-pyspark_3_0_1:
     extends: test-cpu-base
     build:
