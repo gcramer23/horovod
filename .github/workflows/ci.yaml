@@ -242,9 +242,6 @@ jobs:
         timeout-minutes: 30
         run: docker-compose -f docker-compose.test.yml build ${{ matrix.image }}
 
-      - name: Docker ls
-        run: docker image ls
-
       - name: "Gloo Parallel PyTests"
         if: matrix.Gloo_Parallel_PyTests
         timeout-minutes: 7
@@ -644,9 +641,6 @@ jobs:
           mkdir -p artifacts/${{ matrix.image }}/Single_MXNet2_MNIST
           docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet2_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/mxnet/mxnet2_mnist.py --epochs 3"
         shell: bash
-
-      - name: List artifacts
-        run: ls -lahR artifacts
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v2

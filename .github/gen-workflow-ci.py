@@ -129,9 +129,6 @@ def main():
               f'      - name: Build\n'
               f'        timeout-minutes: 30\n'
               f'        run: docker-compose -f docker-compose.test.yml build ${{{{ matrix.image }}}}\n'
-              f'\n'
-              f'      - name: Docker ls\n'
-              f'        run: docker image ls\n'
               f'\n' +
               '\n'.join([f'      - name: "{test["label"]}"\n'
                          f'        if: matrix.{test_id}\n'
@@ -141,9 +138,6 @@ def main():
                          f'          docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{{{ matrix.image }}}}/{test_id}:/artifacts" ${{{{ matrix.image }}}} {test["command"]}\n'
                          f'        shell: bash\n'
                          for test_id, test in tests.items()]) +
-              f'\n'
-              f'      - name: List artifacts\n'
-              f'        run: ls -lahR artifacts\n'
               f'\n'
               f'      - name: Upload Test Results\n'
               f'        uses: actions/upload-artifact@v2\n'
