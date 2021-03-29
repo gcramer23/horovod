@@ -13,6 +13,7 @@ def main():
     path = pathlib.Path(__file__).parent
     script = path.joinpath('..', '.buildkite', 'gen-pipeline.sh').absolute()
     env = dict(
+        PIPELINE_MODE='FULL',
         BUILDKITE_PIPELINE_SLUG='horovod',
         BUILDKITE_PIPELINE_DEFAULT_BRANCH='master',
         BUILDKITE_BRANCH='master'
