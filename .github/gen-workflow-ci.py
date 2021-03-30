@@ -128,6 +128,7 @@ def main():
               f'\n'
               f'      - name: Build\n'
               f'        uses: nick-invision/retry@v2\n'
+              f'        if: false\n'
               f'        with:\n'
               f'          timeout_minutes: 30\n'
               f'          max_attempts: 3\n'
@@ -135,7 +136,7 @@ def main():
               f'          command: docker-compose -f docker-compose.test.yml build ${{{{ matrix.image }}}}\n'
               f'\n' +
               '\n'.join([f'      - name: "{test["label"]}"\n'
-                         f'        if: always() && matrix.{test_id}\n'
+                         f'        if: false && matrix.{test_id}\n'
                          f'        uses: nick-invision/retry@v2\n'
                          f'        with:\n'
                          f'          timeout_minutes: {int(test["timeout"] * 1.5)}\n'
