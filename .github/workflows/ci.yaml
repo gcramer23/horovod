@@ -799,8 +799,8 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: Unit Test Results
-          path: artifacts/**/*.xml
+          name: Unit Test Results - ${{ matrix.image }}
+          path: artifacts/${{ matrix.image }}/**/*.xml
 
   publish-test-results:
     name: "Publish Unit Tests Results"
