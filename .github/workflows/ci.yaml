@@ -246,7 +246,7 @@ jobs:
           command: docker-compose -f docker-compose.test.yml build ${{ matrix.image }}
 
       - name: "Gloo Parallel PyTests"
-        if: matrix.Gloo_Parallel_PyTests
+        if: always() && matrix.Gloo_Parallel_PyTests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 7
@@ -257,7 +257,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Parallel_PyTests:/artifacts" ${{ matrix.image }} bash -c " cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 horovodrun -np 2 -H localhost:2 --gloo /bin/bash /pytest.sh gloo)"
 
       - name: "Gloo Single PyTests"
-        if: matrix.Gloo_Single_PyTests
+        if: always() && matrix.Gloo_Single_PyTests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 22
@@ -268,7 +268,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Single_PyTests:/artifacts" ${{ matrix.image }} bash -c " cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh gloo)"
 
       - name: "Gloo Cluster PyTests"
-        if: matrix.Gloo_Cluster_PyTests
+        if: always() && matrix.Gloo_Cluster_PyTests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -279,7 +279,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Cluster_PyTests:/artifacts" ${{ matrix.image }} bash -c " /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.static.xml test_static_run.py"
 
       - name: "Gloo TensorFlow 2.0 MNIST"
-        if: matrix.Gloo_TensorFlow_2_0_MNIST
+        if: always() && matrix.Gloo_TensorFlow_2_0_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -290,7 +290,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_TensorFlow_2_0_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/tensorflow2/tensorflow2_mnist.py
 
       - name: "Gloo TensorFlow 2.0 Keras MNIST"
-        if: matrix.Gloo_TensorFlow_2_0_Keras_MNIST
+        if: always() && matrix.Gloo_TensorFlow_2_0_Keras_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -301,7 +301,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_TensorFlow_2_0_Keras_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py
 
       - name: "Gloo PyTorch MNIST"
-        if: matrix.Gloo_PyTorch_MNIST
+        if: always() && matrix.Gloo_PyTorch_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -312,7 +312,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_PyTorch_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets
 
       - name: "Gloo MXNet MNIST"
-        if: matrix.Gloo_MXNet_MNIST
+        if: always() && matrix.Gloo_MXNet_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -323,7 +323,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_MXNet_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/mxnet/mxnet_mnist.py
 
       - name: "Elastic Tests 1"
-        if: matrix.Elastic_Tests_1
+        if: always() && matrix.Elastic_Tests_1
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -334,7 +334,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Tests_1:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.xml test_elastic_torch.py test_elastic_tensorflow2.py"
 
       - name: "Elastic Spark TensorFlow Tests 1"
-        if: matrix.Elastic_Spark_TensorFlow_Tests_1
+        if: always() && matrix.Elastic_Spark_TensorFlow_Tests_1
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 30
@@ -345,7 +345,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Spark_TensorFlow_Tests_1:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && SPARK_HOME=/spark SPARK_DRIVER_MEM=512m HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.spark.tf.xml test_elastic_spark_tensorflow2.py"
 
       - name: "Elastic Spark Torch Tests"
-        if: matrix.Elastic_Spark_Torch_Tests
+        if: always() && matrix.Elastic_Spark_Torch_Tests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 30
@@ -356,7 +356,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Spark_Torch_Tests:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && SPARK_HOME=/spark SPARK_DRIVER_MEM=512m HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.spark.torch.xml test_elastic_spark_torch.py"
 
       - name: "Spark PyTests"
-        if: matrix.Spark_PyTests
+        if: always() && matrix.Spark_PyTests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -367,7 +367,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_PyTests:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && (ls -1 test_spark*.py | xargs -n 1 /bin/bash /pytest_standalone.sh spark)"
 
       - name: "Spark Torch MNIST"
-        if: matrix.Spark_Torch_MNIST
+        if: always() && matrix.Spark_Torch_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -378,7 +378,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Torch_MNIST:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/pytorch/pytorch_spark_mnist.py --num-proc 2 --work-dir /work --data-dir /data --epochs 3"
 
       - name: "Single PyTorch MNIST"
-        if: matrix.Single_PyTorch_MNIST
+        if: always() && matrix.Single_PyTorch_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -389,7 +389,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_PyTorch_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/pytorch/pytorch_mnist.py --epochs 3 --data-dir /data/pytorch_datasets"
 
       - name: "Single MXNet MNIST"
-        if: matrix.Single_MXNet_MNIST
+        if: always() && matrix.Single_MXNet_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -400,7 +400,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/mxnet/mxnet_mnist.py --epochs 3"
 
       - name: "MPI Parallel PyTests"
-        if: matrix.MPI_Parallel_PyTests
+        if: always() && matrix.MPI_Parallel_PyTests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 7
@@ -411,7 +411,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Parallel_PyTests:/artifacts" ${{ matrix.image }} bash -c "  cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 \$(cat /mpirun_command) /bin/bash /pytest.sh mpi)"
 
       - name: "MPI Single PyTests"
-        if: matrix.MPI_Single_PyTests
+        if: always() && matrix.MPI_Single_PyTests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -422,7 +422,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Single_PyTests:/artifacts" ${{ matrix.image }} bash -c "  cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh mpi)"
 
       - name: "MPI Cluster PyTests"
-        if: matrix.MPI_Cluster_PyTests
+        if: always() && matrix.MPI_Cluster_PyTests
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -433,7 +433,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Cluster_PyTests:/artifacts" ${{ matrix.image }} bash -c "  /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.static.xml test_static_run.py"
 
       - name: "MPI PyTorch MNIST"
-        if: matrix.MPI_PyTorch_MNIST
+        if: always() && matrix.MPI_PyTorch_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -444,7 +444,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST:/artifacts" ${{ matrix.image }} bash -c " \$(cat /mpirun_command) python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets"
 
       - name: "MPI MXNet MNIST"
-        if: matrix.MPI_MXNet_MNIST
+        if: always() && matrix.MPI_MXNet_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -455,7 +455,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_MXNet_MNIST:/artifacts" ${{ matrix.image }} bash -c " OMP_NUM_THREADS=1 \$(cat /mpirun_command) python /horovod/examples/mxnet/mxnet_mnist.py"
 
       - name: "MPI TensorFlow 2.0 MNIST"
-        if: matrix.MPI_TensorFlow_2_0_MNIST
+        if: always() && matrix.MPI_TensorFlow_2_0_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -466,7 +466,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST:/artifacts" ${{ matrix.image }} bash -c " \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_mnist.py"
 
       - name: "MPI TensorFlow 2.0 Keras MNIST"
-        if: matrix.MPI_TensorFlow_2_0_Keras_MNIST
+        if: always() && matrix.MPI_TensorFlow_2_0_Keras_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -477,7 +477,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST:/artifacts" ${{ matrix.image }} bash -c " \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py"
 
       - name: "MPI Parallel PyTests [ONECCL MPI]"
-        if: matrix.MPI_Parallel_PyTests_ONECCL_MPI
+        if: always() && matrix.MPI_Parallel_PyTests_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 7
@@ -488,7 +488,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Parallel_PyTests_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command &&  cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 \$(cat /mpirun_command) /bin/bash /pytest.sh mpi)"
 
       - name: "MPI Single PyTests [ONECCL MPI]"
-        if: matrix.MPI_Single_PyTests_ONECCL_MPI
+        if: always() && matrix.MPI_Single_PyTests_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -499,7 +499,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Single_PyTests_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command &&  cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh mpi)"
 
       - name: "MPI Cluster PyTests [ONECCL MPI]"
-        if: matrix.MPI_Cluster_PyTests_ONECCL_MPI
+        if: always() && matrix.MPI_Cluster_PyTests_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -510,7 +510,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Cluster_PyTests_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command &&  /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.static.xml test_static_run.py"
 
       - name: "MPI PyTorch MNIST [ONECCL MPI]"
-        if: matrix.MPI_PyTorch_MNIST_ONECCL_MPI
+        if: always() && matrix.MPI_PyTorch_MNIST_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -521,7 +521,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets"
 
       - name: "MPI MXNet MNIST [ONECCL MPI]"
-        if: matrix.MPI_MXNet_MNIST_ONECCL_MPI
+        if: always() && matrix.MPI_MXNet_MNIST_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -532,7 +532,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_MXNet_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && OMP_NUM_THREADS=1 \$(cat /mpirun_command) python /horovod/examples/mxnet/mxnet_mnist.py"
 
       - name: "MPI TensorFlow 2.0 MNIST [ONECCL MPI]"
-        if: matrix.MPI_TensorFlow_2_0_MNIST_ONECCL_MPI
+        if: always() && matrix.MPI_TensorFlow_2_0_MNIST_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -543,7 +543,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_mnist.py"
 
       - name: "MPI TensorFlow 2.0 Keras MNIST [ONECCL MPI]"
-        if: matrix.MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_MPI
+        if: always() && matrix.MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -554,7 +554,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py"
 
       - name: "MPI Parallel PyTests [ONECCL OFI]"
-        if: matrix.MPI_Parallel_PyTests_ONECCL_OFI
+        if: always() && matrix.MPI_Parallel_PyTests_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 7
@@ -565,7 +565,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Parallel_PyTests_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command &&  cd /horovod/test/parallel && (ls -1 test_*.py | xargs -n 1 \$(cat /mpirun_command) /bin/bash /pytest.sh mpi)"
 
       - name: "MPI Single PyTests [ONECCL OFI]"
-        if: matrix.MPI_Single_PyTests_ONECCL_OFI
+        if: always() && matrix.MPI_Single_PyTests_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -576,7 +576,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Single_PyTests_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command &&  cd /horovod/test/single && (ls -1 test_*.py | xargs -n 1 /bin/bash /pytest_standalone.sh mpi)"
 
       - name: "MPI Cluster PyTests [ONECCL OFI]"
-        if: matrix.MPI_Cluster_PyTests_ONECCL_OFI
+        if: always() && matrix.MPI_Cluster_PyTests_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -587,7 +587,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_Cluster_PyTests_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command &&  /etc/init.d/ssh start && cd /horovod/test/integration && pytest --forked -v --capture=fd --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.static.xml test_static_run.py"
 
       - name: "MPI PyTorch MNIST [ONECCL OFI]"
-        if: matrix.MPI_PyTorch_MNIST_ONECCL_OFI
+        if: always() && matrix.MPI_PyTorch_MNIST_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -598,7 +598,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_PyTorch_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/pytorch/pytorch_mnist.py --data-dir /data/pytorch_datasets"
 
       - name: "MPI MXNet MNIST [ONECCL OFI]"
-        if: matrix.MPI_MXNet_MNIST_ONECCL_OFI
+        if: always() && matrix.MPI_MXNet_MNIST_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -609,7 +609,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_MXNet_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && OMP_NUM_THREADS=1 \$(cat /mpirun_command) python /horovod/examples/mxnet/mxnet_mnist.py"
 
       - name: "MPI TensorFlow 2.0 MNIST [ONECCL OFI]"
-        if: matrix.MPI_TensorFlow_2_0_MNIST_ONECCL_OFI
+        if: always() && matrix.MPI_TensorFlow_2_0_MNIST_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -620,7 +620,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_mnist.py"
 
       - name: "MPI TensorFlow 2.0 Keras MNIST [ONECCL OFI]"
-        if: matrix.MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_OFI
+        if: always() && matrix.MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -631,7 +631,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/MPI_TensorFlow_2_0_Keras_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && \$(cat /mpirun_command) python /horovod/examples/tensorflow2/tensorflow2_keras_mnist.py"
 
       - name: "Single PyTorch MNIST [ONECCL MPI]"
-        if: matrix.Single_PyTorch_MNIST_ONECCL_MPI
+        if: always() && matrix.Single_PyTorch_MNIST_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -642,7 +642,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_PyTorch_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && python /horovod/examples/pytorch/pytorch_mnist.py --epochs 3 --data-dir /data/pytorch_datasets"
 
       - name: "Single MXNet MNIST [ONECCL MPI]"
-        if: matrix.Single_MXNet_MNIST_ONECCL_MPI
+        if: always() && matrix.Single_MXNet_MNIST_ONECCL_MPI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -653,7 +653,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet_MNIST_ONECCL_MPI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_mpi' > /mpirun_command && python /horovod/examples/mxnet/mxnet_mnist.py --epochs 3"
 
       - name: "Single PyTorch MNIST [ONECCL OFI]"
-        if: matrix.Single_PyTorch_MNIST_ONECCL_OFI
+        if: always() && matrix.Single_PyTorch_MNIST_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -664,7 +664,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_PyTorch_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && python /horovod/examples/pytorch/pytorch_mnist.py --epochs 3 --data-dir /data/pytorch_datasets"
 
       - name: "Single MXNet MNIST [ONECCL OFI]"
-        if: matrix.Single_MXNet_MNIST_ONECCL_OFI
+        if: always() && matrix.Single_MXNet_MNIST_ONECCL_OFI
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -675,7 +675,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_MXNet_MNIST_ONECCL_OFI:/artifacts" ${{ matrix.image }} bash -c "\$(cat /oneccl_env) && echo '/mpirun_command_ofi' > /mpirun_command && python /horovod/examples/mxnet/mxnet_mnist.py --epochs 3"
 
       - name: "Run PyTests test_interactiverun"
-        if: matrix.Run_PyTests_test_interactiverun
+        if: always() && matrix.Run_PyTests_test_interactiverun
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -686,7 +686,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Run_PyTests_test_interactiverun:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test && pytest -v --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.mpi.integration.xml integration/test_interactiverun.py"
 
       - name: "Gloo TensorFlow MNIST"
-        if: matrix.Gloo_TensorFlow_MNIST
+        if: always() && matrix.Gloo_TensorFlow_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -697,7 +697,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_TensorFlow_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/tensorflow/tensorflow_mnist.py
 
       - name: "Gloo Keras MNIST"
-        if: matrix.Gloo_Keras_MNIST
+        if: always() && matrix.Gloo_Keras_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -708,7 +708,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_Keras_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/keras/keras_mnist_advanced.py
 
       - name: "Elastic Tests 2"
-        if: matrix.Elastic_Tests_2
+        if: always() && matrix.Elastic_Tests_2
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -719,7 +719,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Tests_2:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.xml test_elastic_torch.py test_elastic_tensorflow.py test_elastic_tensorflow_keras.py"
 
       - name: "Elastic Spark TensorFlow Tests 2"
-        if: matrix.Elastic_Spark_TensorFlow_Tests_2
+        if: always() && matrix.Elastic_Spark_TensorFlow_Tests_2
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 30
@@ -730,7 +730,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Elastic_Spark_TensorFlow_Tests_2:/artifacts" ${{ matrix.image }} bash -c "cd /horovod/test/integration && SPARK_HOME=/spark SPARK_DRIVER_MEM=512m HOROVOD_LOG_LEVEL=DEBUG pytest --forked -v --log-cli-level 10 --log-cli-format '[%(asctime)-15s %(levelname)s %(filename)s:%(lineno)d %(funcName)s()] %(message)s' --capture=no --continue-on-collection-errors --junit-xml=/artifacts/junit.gloo.elastic.spark.tf.xml test_elastic_spark_tensorflow.py"
 
       - name: "Spark Keras Rossmann Run"
-        if: matrix.Spark_Keras_Rossmann_Run
+        if: always() && matrix.Spark_Keras_Rossmann_Run
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -741,7 +741,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Keras_Rossmann_Run:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/keras/keras_spark_rossmann_run.py --num-proc 2 --data-dir file:///data --epochs 3 --sample-rate 0.01"
 
       - name: "Spark Keras Rossmann Estimator"
-        if: matrix.Spark_Keras_Rossmann_Estimator
+        if: always() && matrix.Spark_Keras_Rossmann_Estimator
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -752,7 +752,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Keras_Rossmann_Estimator:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/keras/keras_spark_rossmann_estimator.py --num-proc 2 --work-dir /work --data-dir file:///data --epochs 3 --sample-rate 0.01"
 
       - name: "Spark Keras MNIST"
-        if: matrix.Spark_Keras_MNIST
+        if: always() && matrix.Spark_Keras_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -763,7 +763,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Spark_Keras_MNIST:/artifacts" ${{ matrix.image }} bash -c "OMP_NUM_THREADS=1 python /horovod/examples/spark/keras/keras_spark_mnist.py --num-proc 2 --work-dir /work --data-dir /data --epochs 3"
 
       - name: "Single Keras MNIST"
-        if: matrix.Single_Keras_MNIST
+        if: always() && matrix.Single_Keras_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -774,7 +774,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Single_Keras_MNIST:/artifacts" ${{ matrix.image }} bash -c " python /horovod/examples/keras/keras_mnist_advanced.py --epochs 3 --batch-size 64"
 
       - name: "Gloo MXNet2 MNIST"
-        if: matrix.Gloo_MXNet2_MNIST
+        if: always() && matrix.Gloo_MXNet2_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -785,7 +785,7 @@ jobs:
             docker-compose -f docker-compose.test.yml run --rm --volume "$(pwd)/artifacts/${{ matrix.image }}/Gloo_MXNet2_MNIST:/artifacts" ${{ matrix.image }} horovodrun -np 2 -H localhost:2 --gloo python /horovod/examples/mxnet/mxnet2_mnist.py
 
       - name: "Single MXNet2 MNIST"
-        if: matrix.Single_MXNet2_MNIST
+        if: always() && matrix.Single_MXNet2_MNIST
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
@@ -806,7 +806,9 @@ jobs:
     name: "Publish Unit Tests Results"
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: ( github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository )
+    if: >
+      always() &&
+      ( github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository )
 
     steps:
       - name: Download Artifacts
